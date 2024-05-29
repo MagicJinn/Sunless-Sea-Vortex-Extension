@@ -151,7 +151,7 @@ function installContent(files) {
 
 function checkJsonDirectoryStructure(files) {
     const baseFolders = ['addon', 'images'];
-    const subFolders = ['entities', 'encyclopaedia', 'geography']
+    const subFolders = ['constants', 'entities', 'encyclopaedia', 'geography']
 
     prepath = ""
     let pathto = ""
