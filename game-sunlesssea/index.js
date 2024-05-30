@@ -56,10 +56,10 @@ function main(context) {
         },
     });
     // Create a seperate mod type for installing JSON mods to %localappdata%low
-    context.registerModType("JSON Addon Mod", 2, (gameId) => gameId === GAME_ID, JSON_MOD_PATH, () => Promise.resolve(false));
+    context.registerModType("JSON Addon Mod", 26, (gameId) => gameId === GAME_ID, JSON_MOD_PATH, () => Promise.resolve(false));
 
-    context.registerInstaller("Code Injection Mods", 1, isBepInExMod, installContent)
-    context.registerInstaller("JSON Addon Mods", 2, isJSONAddon, installContent)
+    context.registerInstaller("Code Injection Mods", 25, isBepInExMod, installContent)
+    context.registerInstaller("JSON Addon Mods", 26, isJSONAddon, installContent)
 
     return true
 }
