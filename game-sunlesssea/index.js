@@ -72,7 +72,7 @@ async function prepareForModding(discovery) { // Check whether these directories
     return Promise.all(["BepInEx/plugins", "BepInEx/patchers", JSON_MOD_PATH()].map(dirPath => ensureDir(dirPath)));
 }
 
-function isBepInExMod(files) {
+function isBepInExMod(files, gameId) {
     // Check if any of the files in the mod archive have a BepInEx mod 
     let hasBepInExMod = files.some(file => {
         const ext = path.extname(file).toLowerCase();
@@ -84,18 +84,18 @@ function isBepInExMod(files) {
         installPath = checkBepInExDirectoryStructure(files)
     }
 
-    let supported = hasBepInExMod
+    let supported = hasBepInExMod && gameId === GAME_ID
     return Promise.resolve({
         supported,
         requiredFiles: [],
     });
 }
 
-function isJSONAddon(files) {
+function isJSONAddon(files, gameId) {
     // Initial setup for loading JSON mods
     modType = "json"
     installPath = checkJsonDirectoryStructure(files)
-    let supported = true
+    let supported = gameId === GAME_ID;
     return Promise.resolve({
         supported,
         requiredFiles: [],
