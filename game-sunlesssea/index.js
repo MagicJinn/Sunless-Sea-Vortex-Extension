@@ -17,13 +17,13 @@ const JSON_MOD_PATH = (() => {
 
 const BEPINEX_MOD_EXT = ".dll";
 
-var installPath
-var modType
+let installPath;
+let modType;
 
-var namelessModInstalls = 0
-var prepath = ""
+let namelessModInstalls = 0;
+let prepath = "";
 
-var cont // Save context for later use
+let cont; // Save context for later use
 
 const path = require('path');
 const {
@@ -74,7 +74,7 @@ async function prepareForModding(discovery) { // Check whether these directories
 
 function isBepInExMod(files, gameId) {
     // Check if any of the files in the mod archive have a BepInEx mod 
-    let hasBepInExMod = files.some(file => {
+    const hasBepInExMod = files.some(file => {
         const ext = path.extname(file).toLowerCase();
         return ext === BEPINEX_MOD_EXT;
     });
@@ -84,7 +84,7 @@ function isBepInExMod(files, gameId) {
         installPath = checkBepInExDirectoryStructure(files)
     }
 
-    let supported = hasBepInExMod && gameId === GAME_ID
+    const supported = hasBepInExMod && gameId === GAME_ID;
     return Promise.resolve({
         supported,
         requiredFiles: [],
@@ -101,8 +101,6 @@ function isJSONAddon(files, gameId) {
         requiredFiles: [],
     });
 }
-
-
 
 function checkBepInExDirectoryStructure(files) {
     const hasBepInExFolder = files.some(file => file.toLowerCase() == 'bepinex\\');
@@ -121,14 +119,13 @@ function checkBepInExDirectoryStructure(files) {
 }
 
 function installContent(files) {
-    const filtered = files.filter(file =>
-        (!file.endsWith(path.sep)));
+    const filtered = files.filter(file => !file.endsWith(path.sep));
 
     let instructions = filtered.map(file => {
-        console.log("removing prepath " + prepath)
+        console.log("Removing prepath " + prepath)
 
         const destinationPath = path.join(installPath, file.startsWith(prepath) ? file.substring(prepath.length) : file);
-        console.log("install to " + destinationPath)
+        console.log("Install to " + destinationPath)
         return {
             type: 'copy',
             source: file,
@@ -151,29 +148,26 @@ function installContent(files) {
 
 function checkJsonDirectoryStructure(files) {
     const baseFolders = ['addon', 'images'];
-    const subFolders = ['constants', 'entities', 'encyclopaedia', 'geography']
+    const subFolders = ['constants', 'entities', 'encyclopaedia', 'geography'];
 
-    prepath = ""
-    let pathto = ""
-    for (let i = 0; i < files.length; i++) {
-        let parts = files[i].split("\\")
-        for (let i2 = 0; i2 < parts.length; i2++) {
-            if (baseFolders.includes(parts[i2].replace(/[\/\\]/g, ""))) {
-                prepath = pathto
-                break
+    prepath = "";
+    let pathto = "";
+    for (const file of files) {
+        const parts = file.split("\\");
+        for (const part of parts) {
+            if (baseFolders.includes(part.replace(/[\/\\]/g, ""))) {
+                prepath = pathto;
+                break;
             }
-            pathto = parts[i2]
+            pathto = part;
         }
         if (prepath !== "") {
-            return ""
+            return "";
         }
     }
 
     // Check if it's a base mod
     const isBaseMod = files.some(file => baseFolders.includes(file.replace(/[\/\\]/g, "")));
-
-    // const isBaseMod = baseFolders.some(folder => files.includes(folder.replace(/[\/\\]/g, "")));
-
     if (isBaseMod) {
         return "";
     }
@@ -186,7 +180,7 @@ function checkJsonDirectoryStructure(files) {
         return '/addon';
     }
 
-    namelessModInstalls++
+    namelessModInstalls++;
     cont.api.sendNotification({
         type: "warning",
         message: "Incorrect mod format, contact the mod author.",
@@ -199,13 +193,11 @@ function checkJsonDirectoryStructure(files) {
                         text: "The Sunless Sea Vortex extension was coded in a way to still allow this mod to run, but it is undesirable and might break. Contact the mod author to fix the formatting error in the latest version. Mod shall be installed as Nameless Mod " + namelessModInstalls,
                         message: "Accepted formats for addons:\nARCHIVE > Mod Folder > entities/geography etc > JSON\nARCHIVE > addons > Mod Folder > entities/geography etc > JSON\nYour format:\nARCHIVE > entities/geography etc > JSON\nor other",
                     },
-                    [{
-                        label: "Close"
-                    }]
-                )
+                    [{ label: "Close" }]
+                );
             }
-        }, ]
-    })
+        }]
+    });
 
     return path.join('/addon', "Nameless Mod " + namelessModInstalls);
 }
